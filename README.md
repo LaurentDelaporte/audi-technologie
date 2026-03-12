@@ -1,32 +1,32 @@
-# Audi Master Quiz
+# Audi Tech Master Quiz
 
 ## 🏁 Présentation
-Le **Audi Master Quiz** est une application web interactive dédiée à l'univers de la marque aux quatre anneaux. Conçu pour les passionnés, ce quiz permet de tester vos connaissances à travers deux modes de jeu distincts :
-1. **Histoire & Héritage** : Découvrez les origines d'August Horch, la fusion d'Auto Union et les modèles légendaires.
-2. **Technologie & Futur** : Explorez l'électromobilité, les plateformes PPE/MEB, l'hybridation et les innovations de demain.
+Le **Audi Tech Master Quiz** est une application web interactive conçue pour tester vos connaissances sur les technologies de pointe de la marque aux quatre anneaux. Ce quiz se concentre exclusivement sur les innovations contemporaines :
+- **Électromobilité** (Gamme e-tron, plateformes PPE/J1).
+- **Hybridation** (TFSI e, MHEV 48V).
+- **Aides à la conduite & Logiciels** (CARIAD, LiDAR, Pilotage autonome).
+- **Design & Ingénierie** (Efficience, aérodynamisme, matériaux).
 
 ## 🛠 Fonctionnalités
-- **Mode bilingue (Thématique)** : Choix entre Histoire ou Technologie dès le lancement.
-- **Retour Pédagogique** : Chaque réponse (correcte ou erronée) affiche une note historique ou technique pour enrichir vos connaissances.
-- **Interface Minimaliste** : Design épuré inspiré de l'élégance Audi (noir, gris argent et rouge signature).
-- **Entièrement Web** : Pas besoin de serveur backend, le quiz est autonome en HTML5/JS.
+- **50 Questions Techniques** : Un parcours complet pour valider votre expertise.
+- **Feedback Instantané** : Après chaque réponse, une explication détaillée vous est fournie pour enrichir vos connaissances.
+- **Design Premium** : Une interface minimaliste et élégante, respectant l'identité visuelle d'Audi (noir profond, gris, rouge signature).
+- **Autonome** : L'application fonctionne sans serveur, directement dans votre navigateur.
 
-## 🚀 Installation & Lancement
-Aucune installation complexe n'est requise. Le projet est contenu dans un fichier HTML unique.
+## 🚀 Utilisation
+Aucune installation n'est nécessaire.
+1. Enregistrez le code dans un fichier nommé `index.html`.
+2. Ouvrez le fichier `index.html` avec votre navigateur web (Chrome, Firefox, Safari ou Edge).
+3. Cliquez sur les réponses pour tester vos connaissances.
 
-1. Téléchargez le fichier `index.html`.
-2. Ouvrez-le simplement avec votre navigateur web favori (Chrome, Firefox, Safari ou Edge).
-3. Choisissez votre mode de jeu et commencez l'analyse.
+## ⚙️ Structure Technique
+- **HTML5** : Squelette de l'application.
+- **CSS3** : Design responsive avec variables CSS (`:root`) pour une maintenance facile.
+- **JavaScript (ES6+)** : Logique de quiz dynamique, gestion des états et feedback utilisateur.
 
-## ⚙️ Architecture Technique
-- **Structure** : HTML5 sémantique.
-- **Style** : CSS3 moderne avec variables de couleurs CSS (`:root`) pour respecter la charte graphique Audi.
-- **Logique** : JavaScript Vanilla (ES6+) pour une exécution légère et rapide.
-
-## 🤝 Contribution
-Ce projet est open-source pour la communauté des fans d'Audi. 
-- Pour ajouter des questions : Il suffit de modifier le tableau `quizData` dans la section `<script>` du fichier HTML.
-- **Attention** : Veillez à respecter la syntaxe JSON (virgules entre les objets, guillemets, et fermeture des accolades).
+## 💡 Personnalisation
+Pour ajouter ou modifier des questions, ouvrez le fichier `index.html` avec un éditeur de texte et modifiez le tableau `quizTech` situé dans la balise `<script>`.
+*Note : Veillez à respecter scrupuleusement la syntaxe JSON (virgules entre les objets, guillemets, et parenthèses).*
 
 ## 👤 Auteur
-Projet développé avec passion par un enthousiaste de la marque Audi.
+Projet développé pour la communauté des passionnés de technologie automobile et de la marque Audi.
