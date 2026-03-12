@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Audi Master Quiz</title>
+    <title>Audi Tech Master Quiz - 50 Questions</title>
     <style>
         :root { --audi-red: #f1052d; --bg-black: #050505; --paper: #e5e5e5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-black); color: var(--paper); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
@@ -18,13 +18,8 @@
 <body>
 
 <div id="quiz-container">
-    <div id="menu-view">
-        <h1>AUDI MASTER QUIZ</h1>
-        <button onclick="startGame('history')">HISTOIRE & HÉRITAGE</button>
-        <button onclick="startGame('tech')">TECHNOLOGIE & FUTUR</button>
-    </div>
-
-    <div id="game-view" style="display:none;">
+    <div id="game-view">
+        <h2 style="color: var(--audi-red);">AUDI TECH MASTER - 50 QUESTIONS</h2>
         <div id="question-text" style="font-size: 1.2rem; margin: 20px 0;"></div>
         <div id="options-container" class="options"></div>
         <div id="insight-box">
@@ -35,16 +30,10 @@
 </div>
 
 <script>
-// Liste 1 : Histoire
-const quizHistory = [
-    { q: "En quelle année August Horch a-t-il fondé sa première société ?", o: ["1899", "1904", "1909", "1932"], a: 0, i: "August Horch a fondé son entreprise à Cologne." },
-    { q: "Que signifie 'Audi' en latin ?", o: ["Quatre", "Écoute !", "Cercle", "Rapide"], a: 1, i: "C'est la traduction latine de 'Horch' (écoute)." }
-];
-
-// Liste 2 : Technologie (50 questions)
+// Base de données des 50 questions techniques Audi
 const quizTech = [
     { q: "Quelle est la tension de l'architecture électrique de l'Audi e-tron GT ?", o: ["400V", "800V", "1000V", "12V"], a: 1, i: "L'architecture 800V permet une charge ultra-rapide." },
-    { q: "Comment s'appelle la plateforme électrique développée avec Porsche ?", o: ["MEB", "PPE", "MQB", "MLB"], a: 1, i: "La Premium Platform Electric (PPE) équipe les nouveaux modèles comme le Q6 e-tron." },
+    { q: "Comment s'appelle la plateforme électrique développée avec Porsche ?", o: ["MEB", "PPE", "MQB", "MLB"], a: 1, i: "La Premium Platform Electric (PPE) équipe les nouveaux modèles." },
     { q: "Qu'est-ce que l'Audi 'Quattro Ultra' ?", o: ["4x4 permanent", "Système déconnectable", "Moteur hybride", "Aide au parking"], a: 1, i: "Il permet d'économiser du carburant en passant en traction simple quand le 4x4 n'est pas requis." },
     { q: "Quelle technologie Audi remplace les rétroviseurs ?", o: ["Caméras virtuelles", "Radars", "Lidar", "Rétros repliables"], a: 0, i: "Les Virtual Mirrors réduisent la traînée aérodynamique." },
     { q: "Quel est le nom de la gamme 100% électrique ?", o: ["e-tron", "Quattro", "RS", "S-Line"], a: 0, i: "La gamme e-tron désigne les véhicules électriques." },
@@ -95,20 +84,11 @@ const quizTech = [
     { q: "Mission 2033 ?", o: ["Arrêt thermique", "Fusion", "F1", "2-temps"], a: 0, i: "Tout électrique." }
 ];
 
-let currentQuiz = [];
 let currentIdx = 0;
 
-function startGame(mode) {
-    currentQuiz = (mode === 'history') ? quizHistory : quizTech;
-    currentIdx = 0;
-    document.getElementById('menu-view').style.display = 'none';
-    document.getElementById('game-view').style.display = 'block';
-    loadQ();
-}
-
 function loadQ() {
-    if(currentIdx >= currentQuiz.length) { alert("Quiz terminé !"); location.reload(); return; }
-    const q = currentQuiz[currentIdx];
+    if(currentIdx >= quizTech.length) { alert("Quiz terminé !"); location.reload(); return; }
+    const q = quizTech[currentIdx];
     document.getElementById('question-text').innerText = q.q;
     const cont = document.getElementById('options-container');
     cont.innerHTML = '';
@@ -122,14 +102,14 @@ function loadQ() {
 }
 
 function reveal(idx) {
-    const correct = currentQuiz[currentIdx].a;
+    const correct = quizTech[currentIdx].a;
     const btns = document.querySelectorAll('.options button');
     btns.forEach((b, i) => {
         b.disabled = true;
         if(i === correct) b.classList.add('correct');
         else if(i === idx) b.classList.add('wrong');
     });
-    document.getElementById('insight-text').innerText = currentQuiz[currentIdx].i;
+    document.getElementById('insight-text').innerText = quizTech[currentIdx].i;
     document.getElementById('insight-box').style.display = 'block';
 }
 
@@ -137,6 +117,8 @@ function nextQuestion() {
     currentIdx++;
     loadQ();
 }
+
+loadQ();
 </script>
 </body>
 </html>
