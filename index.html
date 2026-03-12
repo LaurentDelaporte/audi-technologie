@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Audi Master Quiz</title>
+    <style>
+        :root { --audi-red: #f1052d; --bg-black: #050505; --paper: #e5e5e5; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-black); color: var(--paper); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        #quiz-container { width: 90%; max-width: 700px; background: #111; padding: 30px; border: 1px solid #333; text-align: center; }
+        .options { display: grid; gap: 10px; margin-top: 20px; }
+        button { padding: 15px; cursor: pointer; background: #222; color: white; border: 1px solid #444; font-weight: bold; }
+        button:hover { background: var(--audi-red); }
+        .correct { background: #28a745 !important; }
+        .wrong { background: #dc3545 !important; }
+        #insight-box { margin-top: 20px; padding: 15px; background: #1a1a1a; display: none; border-left: 4px solid var(--audi-red); text-align: left; }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <div id="menu-view">
+        <h1>AUDI MASTER QUIZ</h1>
+        <button onclick="startGame('history')">HISTOIRE & HERITAGE</button>
+        <button onclick="startGame('tech')">TECHNOLOGIE & FUTUR</button>
+    </div>
+
+    <div id="game-view" style="display:none;">
+        <div id="timer" style="color:var(--audi-red); font-size: 1.5rem;">30</div>
+        <div id="question-text" style="font-size: 1.2rem; margin: 20px 0;"></div>
+        <div id="options-container" class="options"></div>
+        <div id="insight-box">
+            <p id="insight-text"></p>
+            <button id="next-btn" onclick="nextQuestion()">Suivant →</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const quizData = [
+    { q: "Quelle est la tension de l'architecture électrique de l'Audi e-tron GT ?", o: ["400V", "800V", "1000V", "12V"], a: 1, i: "L'architecture 800V permet une charge ultra-rapide." },
+    { q: "Comment s'appelle la plateforme électrique développée avec Porsche ?", o: ["MEB", "PPE", "MQB", "MLB"], a: 1, i: "La Premium Platform Electric (PPE) équipe les nouveaux modèles comme le Q6 e-tron." },
+    { q: "Qu'est-ce que l'Audi 'Quattro Ultra' ?", o: ["Un 4x4 permanent", "Un système qui déconnecte le train arrière", "Un moteur hybride", "Une aide au parking"], a: 1, i: "Il permet d'économiser du carburant en passant en traction simple quand le 4x4 n'est pas requis." },
+    { q: "Quelle technologie Audi remplace les rétroviseurs classiques sur certains modèles ?", o: ["Caméras virtuelles", "Radars", "Lidar", "Rétros repliables"], a: 0, i: "Les Virtual Mirrors réduisent la traînée aérodynamique." },
+    { q: "Quel est le nom de la gamme 100% électrique d'Audi ?", o: ["e-tron", "Quattro", "RS", "S-Line"], a: 0, i: "La gamme e-tron désigne tous les véhicules électriques de la marque." },
+    { q: "Quel type de moteur utilise l'Audi RS Q e-tron sur le Dakar ?", o: ["V8 essence", "100% électrique avec prolongateur", "Diesel", "Hydrogène"], a: 1, i: "Il est mû par des moteurs électriques, aidés par un convertisseur d'énergie essence." },
+    { q: "Que signifie 'TFSI' chez Audi ?", o: ["Turbo Fuel Stratified Injection", "Twin Fuel System Integration", "Turbo Fast Sport Injection", "Total Fluid System"], a: 0, i: "C'est l'association de la turbocompression et de l'injection directe." },
+    { q: "Quelle est la particularité des phares Matrix LED ?", o: ["Ils tournent avec le volant", "Ils désactivent des segments pour ne pas éblouir", "Ils sont en laser", "Ils changent de couleur"], a: 1, i: "Ils permettent de garder les pleins phares sans éblouir les autres conducteurs." },
+    { q: "Qu'est-ce que l'Audi 'Predictive Efficiency Assistant' ?", o: ["Une aide à la conduite qui anticipe le trafic", "Un système de freinage d'urgence", "Une aide au parking", "Un réglage de suspension"], a: 0, i: "Il utilise les données GPS pour optimiser la consommation (roue libre, freinage régénératif)." },
+    { q: "Quelle technologie Audi équipe l'A8 pour gérer les chocs latéraux ?", o: ["Suspension active", "Airbags extérieurs", "Radar 360", "Structure en carbone"], a: 0, i: "La suspension active lève la voiture en quelques millisecondes pour absorber l'impact sur le bas de caisse." },
+    { q: "Sur quel modèle Audi a-t-on vu apparaître pour la première fois les phares Laser ?", o: ["Audi A3", "Audi R8 LMX", "Audi Q7", "Audi TT"], a: 1, i: "La R8 LMX a été pionnière de cette technologie en 2014." },
+    { q: "Quel est l'avantage principal de l'aluminium dans la construction ASF ?", o: ["Prix bas", "Légèreté et rigidité", "Facilité de réparation", "Esthétique"], a: 1, i: "L'Audi Space Frame (ASF) réduit le poids total, améliorant dynamisme et efficience." },
+    { q: "Qu'est-ce que l'e-quattro ?", o: ["Un 4x4 mécanique", "Quatre roues motrices via moteurs électriques", "Un mode sport", "Une option luxe"], a: 1, i: "Sur les modèles e-tron, chaque essieu est motorisé indépendamment sans liaison mécanique." },
+    { q: "Quel est le nom du système d'infotainment d'Audi ?", o: ["MDI", "MMI", "iDrive", "Sync"], a: 1, i: "Le Multi Media Interface (MMI) est le cœur numérique du cockpit." },
+    { q: "Quel modèle de la gamme e-tron est un SUV coupé ?", o: ["Q4 e-tron Sportback", "A3 e-tron", "Q7 e-tron", "R8 e-tron"], a: 0, i: "La désignation 'Sportback' chez Audi indique une ligne de toit fuyante." },
+    { q: "Qu'est-ce que l'Audi 'CARIAD' ?", o: ["La division sport", "La branche logicielle du groupe", "Le département design", "Une filiale moteur"], a: 1, i: "CARIAD développe l'architecture logicielle uniforme pour tout le groupe VW." },
+    { q: "Quelle est la fonction du 'Braking Recuperation' (freinage régénératif) ?", o: ["Nettoyer les freins", "Recharger la batterie à la décélération", "Freiner plus court", "Refroidir les disques"], a: 1, i: "L'énergie cinétique est convertie en électricité pour alimenter la batterie." },
+    { q: "Quelle innovation sur le Q6 e-tron permet une personnalisation des feux de jour ?", o: ["LED matricielles", "OLED numérique", "Laser", "Fibres optiques"], a: 1, i: "La technologie OLED numérique permet de choisir différentes signatures lumineuses." },
+    { q: "Quel type de moteur est le 5 cylindres TFSI ?", o: ["V5", "Ligne", "Boxer", "Rotatif"], a: 1, i: "C'est un 5 cylindres en ligne emblématique, célèbre pour sa sonorité." },
+    { q: "Que signifie 'e-tron' en français ?", o: ["Électronique", "Électrique", "Pas de traduction (nom propre)", "Énergie"], a: 2, i: "C'est la marque technologique d'Audi pour l'électrification, et non une simple traduction." },
+    { q: "Quelle est la principale caractéristique d'une hybride rechargeable (PHEV) Audi ?", o: ["Auto-rechargeable", "Batterie haute capacité rechargeable sur secteur", "Moteur diesel uniquement", "Pas de moteur essence"], a: 1, i: "Elle permet de rouler en mode 100% électrique sur une distance limitée." },
+    { q: "Comment Audi appelle-t-elle ses modèles hybrides rechargeables ?", o: ["TFSI e", "e-tron S", "Hybrid", "Quattro e"], a: 0, i: "La nomenclature 'TFSI e' est utilisée pour les modèles hybrides rechargeables." },
+    { q: "Quel matériau est privilégié par Audi pour les ressorts de suspension légers ?", o: ["Titane", "Acier renforcé", "Polymère (GFRP)", "Aluminium"], a: 2, i: "Le plastique renforcé de fibres de verre réduit le poids non suspendu." },
+    { q: "Qu'est-ce que l'Audi 'Parking Pilot' (avancé) ?", o: ["Aide au stationnement 100% autonome", "Capteur de recul simple", "Caméra 360", "Assistance au freinage"], a: 0, i: "Il permet à la voiture de se garer seule, parfois même sans le conducteur à bord via smartphone." },
+    { q: "Quel est l'intérêt du 'Böllinger Höfe' pour Audi ?", o: ["Centre de design", "Site de production des sportives (R8, e-tron GT)", "Musée", "Usine de moteurs"], a: 1, i: "C'est l'usine 'haute couture' pour les modèles de performance." },
+    { q: "Qu'est-ce que le 'Virtual Cockpit' ?", o: ["Un tableau de bord numérique haute résolution", "Un écran tactile", "Une application", "Un toit ouvrant"], a: 0, i: "Il remplace les compteurs à aiguilles par un écran entièrement configurable." },
+    { q: "Quel est le nom de la division qui gère les modèles RS ?", o: ["Audi Sport GmbH", "Quattro Division", "RS Corp", "S-Line"], a: 0, i: "Audi Sport GmbH est la structure dédiée à la performance." },
+    { q: "Quelle Audi a été la première à proposer le pilotage autonome de niveau 3 ?", o: ["Audi A6", "Audi A8", "Audi R8", "Audi Q7"], a: 1, i: "L'A8 D5 a été la première, bien que son utilisation fût très limitée par la loi." },
+    { q: "Comment Audi améliore-t-elle l'acoustique dans ses électriques ?", o: ["Mousse isolante", "Vitrage acoustique et suppression active", "Moteur silencieux", "Design"], a: 1, i: "La combinaison de vitrage spécifique et de réduction de bruit active est cruciale." },
+    { q: "Quel est le rôle du 'LiDAR' sur les nouveaux modèles ?", o: ["Scanner l'environnement en 3D", "Radio", "Navigation", "Musique"], a: 0, i: "Le LiDAR est essentiel pour la sécurité et les fonctions d'assistance avancées." },
+    { q: "Quel constructeur a aidé Audi à développer ses premiers moteurs TDI ?", o: ["Fiat", "Mercedes", "Aucun, interne", "BMW"], a: 2, i: "Audi a développé le TDI en interne avec une persévérance légendaire." },
+    { q: "Quelle est la particularité du moteur 2.0 TFSI ?", o: ["Il utilise un cycle Miller", "Il est exclusivement électrique", "Il n'a pas de turbo", "Il est V6"], a: 0, i: "Le cycle B-cycle (Miller) améliore l'efficience à charge partielle." },
+    { q: "Qu'est-ce que l'Audi 'Drive Select' ?", o: ["Choix des modes de conduite", "Changement de roue", "Aide à la marche arrière", "Contrôle de vitesse"], a: 0, i: "Il permet d'ajuster le comportement moteur, suspension et direction." },
+    { q: "Quel est l'avantage du refroidissement liquide des batteries ?", o: ["Plus rapide", "Meilleure longévité et puissance de charge", "Moins cher", "Plus léger"], a: 1, i: "Le maintien d'une température stable est critique pour les performances électriques." },
+    { q: "Audi a-t-elle des modèles à hydrogène ?", o: ["Oui, de série", "Non, aucun", "En test (h-tron)", "Oui, sur les camions"], a: 2, i: "Audi a présenté des prototypes h-tron, mais la priorité est donnée au tout électrique." },
+    { q: "Qu'est-ce qu'une suspension 'Magnetic Ride' ?", o: ["Suspension avec fluide ferreux piloté", "Suspension à air", "Suspension mécanique fixe", "Suspension en fer"], a: 0, i: "Le fluide change de viscosité instantanément sous l'effet d'un champ magnétique." },
+    { q: "Quelle est la particularité du système de freinage sur les RS avec disques carbone-céramique ?", o: ["Ils chauffent moins", "Ils durent moins longtemps", "Ils sont en fonte", "Ils sont fragiles"], a: 0, i: "Ils offrent une endurance et une résistance à la chaleur incomparables." },
+    { q: "Qu'est-ce que l'Audi 'Phone Box' ?", o: ["Téléphone intégré", "Recharge par induction et amplificateur d'antenne", "Housse de siège", "Accessoire"], a: 1, i: "Elle permet la recharge sans fil et une meilleure réception via l'antenne voiture." },
+    { q: "Comment Audi gère-t-elle la mise à jour de ses logiciels ?", o: ["Passage en garage obligatoire", "Over-the-Air (OTA)", "CD-ROM", "Pas de mise à jour"], a: 1, i: "Les mises à jour à distance (OTA) permettent d'améliorer les fonctions sans se déplacer." },
+    { q: "Quel est le nom de la future génération de cockpit Audi (plusieurs écrans) ?", o: ["Panoramic Display", "MMI Touch Response", "Smart Screen", "Digital Cockpit"], a: 1, i: "L'interface MMI Touch Response est devenue le standard pour le tactile avec retour haptique." },
+    { q: "Qu'est-ce que l'Audi 'Traffic Jam Pilot' ?", o: ["Aide dans les bouchons", "Aide sur autoroute", "Aide au stationnement", "Freinage d'urgence"], a: 0, i: "Il gère accélération et freinage dans les encombrements." },
+    { q: "Quelle technologie aide à réduire la traînée des jantes ?", o: ["Aéro-inserts", "Peinture", "Rayons fins", "Pneus lisses"], a: 0, i: "Des inserts aérodynamiques ferment partiellement les jantes pour lisser l'air." },
+    { q: "Qu'est-ce que le 'Pre Sense' ?", o: ["Système de sécurité préventive", "GPS", "Climatisation", "Système audio"], a: 0, i: "Il détecte les risques d'accident et prépare les systèmes de sécurité." },
+    { q: "Quel est l'avantage du châssis multi-bras Audi ?", o: ["Moins cher", "Meilleur confort et précision", "Plus lourd", "Plus complexe à réparer"], a: 1, i: "C'est la référence Audi pour l'équilibre confort/sportivité." },
+    { q: "Qu'est-ce que l'Audi 'App Store' dans la voiture ?", o: ["Magasin de jeux", "Accès à des apps tierces directement sur l'écran", "Boutique d'accessoires", "Rien"], a: 1, i: "Audi intègre désormais un store d'applications pour le divertissement et le service." },
+    { q: "Sur quelle base est conçue l'Audi A3 actuelle ?", o: ["Plateforme MQB Evo", "Plateforme PPE", "Plateforme J1", "Plateforme MLB"], a: 0, i: "La MQB Evo est la plateforme modulaire pour les moteurs transversaux." },
+    { q: "Qu'est-ce que l'Audi 'S' (ex: S3, S5) ?", o: ["La version sport d'entrée de gamme", "La version de base", "La version luxueuse", "Une voiture électrique"], a: 0, i: "La gamme S est le premier niveau de sportivité chez Audi." },
+    { q: "Que permet le 'torque vectoring' ?", o: ["Répartir le couple entre les roues", "Augmenter la vitesse", "Freiner plus fort", "Changer les vitesses"], a: 0, i: "Il optimise la trajectoire en gérant finement la puissance sur chaque roue." },
+    { q: "Qu'est-ce que le 'Mild Hybrid' (MHEV) ?", o: ["Hybride rechargeable", "Hybridation légère 48V", "100% électrique", "Moteur diesel"], a: 1, i: "Le 48V permet de couper le moteur plus souvent et d'assister les phases de démarrage." },
+    { q: "Quelle est la mission d'Audi pour 2033 ?", o: ["Arrêt de la production de thermiques", "Fusion avec une autre marque", "Abandon de la F1", "Retour au 2-temps"], a: 0, i: "Audi prévoit de ne produire que des modèles 100% électriques à partir de 2033." }
+];
+
+let currentQuiz = [];
+let currentIdx = 0;
+let timer;
+
+function startGame(mode) {
+    currentQuiz = (mode === 'history') ? quizHistory : quizTech;
+    currentIdx = 0;
+    document.getElementById('menu-view').style.display = 'none';
+    document.getElementById('game-view').style.display = 'block';
+    loadQ();
+}
+
+function loadQ() {
+    if(currentIdx >= currentQuiz.length) { alert("Quiz terminé !"); location.reload(); return; }
+    const q = currentQuiz[currentIdx];
+    document.getElementById('question-text').innerText = q.q;
+    const cont = document.getElementById('options-container');
+    cont.innerHTML = '';
+    q.o.forEach((opt, i) => {
+        const b = document.createElement('button');
+        b.innerText = opt;
+        b.onclick = () => reveal(i);
+        cont.appendChild(b);
+    });
+    document.getElementById('insight-box').style.display = 'none';
+}
+
+function reveal(idx) {
+    const correct = currentQuiz[currentIdx].a;
+    const btns = document.querySelectorAll('.options button');
+    btns.forEach((b, i) => {
+        b.disabled = true;
+        if(i === correct) b.classList.add('correct');
+        else if(i === idx) b.classList.add('wrong');
+    });
+    document.getElementById('insight-text').innerText = currentQuiz[currentIdx].i;
+    document.getElementById('insight-box').style.display = 'block';
+}
+
+function nextQuestion() {
+    currentIdx++;
+    loadQ();
+}
+</script>
+</body>
+</html>
