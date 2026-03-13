@@ -2,94 +2,94 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Audi Tech Master Quiz - 50 Questions</title>
+    <title>Audi Expert Tech Quiz - 50 Questions</title>
     <style>
         :root { --audi-red: #f1052d; --bg-black: #050505; --paper: #e5e5e5; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg-black); color: var(--paper); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        #quiz-container { width: 90%; max-width: 700px; background: #111; padding: 30px; border: 1px solid #333; text-align: center; }
-        .options { display: grid; gap: 10px; margin-top: 20px; }
-        button { padding: 15px; cursor: pointer; background: #222; color: white; border: 1px solid #444; font-weight: bold; }
+        #quiz-container { width: 90%; max-width: 800px; background: #111; padding: 40px; border: 1px solid #333; text-align: center; }
+        .options { display: grid; gap: 12px; margin-top: 25px; }
+        button { padding: 18px; cursor: pointer; background: #222; color: white; border: 1px solid #444; font-weight: bold; transition: 0.3s; }
         button:hover { background: var(--audi-red); }
-        .correct { background: #28a745 !important; }
-        .wrong { background: #dc3545 !important; }
-        #insight-box { margin-top: 20px; padding: 15px; background: #1a1a1a; display: none; border-left: 4px solid var(--audi-red); text-align: left; }
+        .correct { background: #28a745 !important; border-color: #28a745 !important; }
+        .wrong { background: #dc3545 !important; border-color: #dc3545 !important; }
+        #insight-box { margin-top: 25px; padding: 20px; background: #1a1a1a; display: none; border-left: 5px solid var(--audi-red); text-align: left; }
     </style>
 </head>
 <body>
 
 <div id="quiz-container">
     <div id="game-view">
-        <h2 style="color: var(--audi-red);">AUDI TECH MASTER - 50 QUESTIONS</h2>
-        <div id="question-text" style="font-size: 1.2rem; margin: 20px 0;"></div>
+        <h2 style="color: var(--audi-red);">AUDI EXPERT TECH - NIVEAU AVANCÉ</h2>
+        <div id="question-text" style="font-size: 1.3rem; margin: 30px 0; font-weight: 600;"></div>
         <div id="options-container" class="options"></div>
         <div id="insight-box">
-            <p id="insight-text"></p>
-            <button id="next-btn" onclick="nextQuestion()">Suivant →</button>
+            <p id="insight-text" style="line-height: 1.6;"></p>
+            <button id="next-btn" onclick="nextQuestion()" style="margin-top:15px;">Question suivante →</button>
         </div>
     </div>
 </div>
 
 <script>
-// Base de données des 50 questions techniques Audi
-const quizTech = [
-    { q: "Quelle est la tension de l'architecture électrique de l'Audi e-tron GT ?", o: ["400V", "800V", "1000V", "12V"], a: 1, i: "L'architecture 800V permet une charge ultra-rapide." },
-    { q: "Comment s'appelle la plateforme électrique développée avec Porsche ?", o: ["MEB", "PPE", "MQB", "MLB"], a: 1, i: "La Premium Platform Electric (PPE) équipe les nouveaux modèles." },
-    { q: "Qu'est-ce que l'Audi 'Quattro Ultra' ?", o: ["4x4 permanent", "Système déconnectable", "Moteur hybride", "Aide au parking"], a: 1, i: "Il permet d'économiser du carburant en passant en traction simple quand le 4x4 n'est pas requis." },
-    { q: "Quelle technologie Audi remplace les rétroviseurs ?", o: ["Caméras virtuelles", "Radars", "Lidar", "Rétros repliables"], a: 0, i: "Les Virtual Mirrors réduisent la traînée aérodynamique." },
-    { q: "Quel est le nom de la gamme 100% électrique ?", o: ["e-tron", "Quattro", "RS", "S-Line"], a: 0, i: "La gamme e-tron désigne les véhicules électriques." },
-    { q: "Quel moteur utilise l'Audi RS Q e-tron sur le Dakar ?", o: ["V8 essence", "Électrique avec prolongateur", "Diesel", "Hydrogène"], a: 1, i: "Il utilise des moteurs électriques et un convertisseur d'énergie." },
-    { q: "Que signifie 'TFSI' ?", o: ["Turbo Fuel Stratified Injection", "Twin Fuel System", "Turbo Fast Sport", "Total Fluid"], a: 0, i: "Association de la turbocompression et de l'injection directe." },
-    { q: "Quelle est la particularité des phares Matrix LED ?", o: ["Rotation", "Désactivation de segments", "Laser", "Couleurs"], a: 1, i: "Ils permettent de garder les pleins phares sans éblouir." },
-    { q: "Qu'est-ce que l'Audi 'Predictive Efficiency Assistant' ?", o: ["Anticipation trafic", "Freinage d'urgence", "Parking", "Suspension"], a: 0, i: "Il utilise le GPS pour optimiser la consommation." },
-    { q: "Quelle technologie équipe l'A8 pour les chocs latéraux ?", o: ["Suspension active", "Airbags extérieurs", "Radar 360", "Carbone"], a: 0, i: "La suspension active lève la voiture pour absorber le choc." },
-    { q: "Sur quel modèle sont apparus les phares Laser ?", o: ["A3", "R8 LMX", "Q7", "TT"], a: 1, i: "La R8 LMX était pionnière en 2014." },
-    { q: "Avantage de l'aluminium (ASF) ?", o: ["Prix", "Légèreté/Rigidité", "Réparation", "Design"], a: 1, i: "L'Audi Space Frame améliore le dynamisme." },
-    { q: "Qu'est-ce que l'e-quattro ?", o: ["4x4 mécanique", "4 roues motrices électriques", "Mode sport", "Luxe"], a: 1, i: "Chaque essieu est motorisé indépendamment." },
-    { q: "Nom du système d'infotainment ?", o: ["MDI", "MMI", "iDrive", "Sync"], a: 1, i: "Le Multi Media Interface est le cœur numérique." },
-    { q: "SUV coupé chez Audi ?", o: ["Q4 Sportback", "A3 e-tron", "Q7 e-tron", "R8 e-tron"], a: 0, i: "Désignation 'Sportback' pour le toit fuyant." },
-    { q: "Qu'est-ce que CARIAD ?", o: ["Division sport", "Branche logicielle", "Design", "Moteurs"], a: 1, i: "CARIAD développe l'architecture logicielle du groupe." },
-    { q: "Fonction du freinage régénératif ?", o: ["Nettoyage", "Recharge batterie", "Freinage court", "Refroidissement"], a: 1, i: "Conversion d'énergie cinétique en électricité." },
-    { q: "Personnalisation des feux sur Q6 e-tron ?", o: ["LED", "OLED numérique", "Laser", "Fibres"], a: 1, i: "Technologie OLED numérique pour signatures lumineuses." },
-    { q: "Type de moteur 5 cylindres TFSI ?", o: ["V5", "Ligne", "Boxer", "Rotatif"], a: 1, i: "5 cylindres en ligne emblématique." },
-    { q: "Signification 'e-tron' ?", o: ["Électronique", "Électrique", "Nom propre", "Énergie"], a: 2, i: "Marque technologique, pas une traduction." },
-    { q: "Caractéristique hybride rechargeable ?", o: ["Auto-recharge", "Rechargeable secteur", "Diesel", "Sans essence"], a: 1, i: "Mode 100% électrique sur distance limitée." },
-    { q: "Comment Audi appelle ses hybrides rechargeables ?", o: ["TFSI e", "e-tron S", "Hybrid", "Quattro e"], a: 0, i: "Nomenclature 'TFSI e'." },
-    { q: "Ressorts de suspension légers ?", o: ["Titane", "Acier", "Polymère (GFRP)", "Alu"], a: 2, i: "Le GFRP réduit le poids non suspendu." },
-    { q: "Parking Pilot (avancé) ?", o: ["Autonome", "Recul simple", "Caméra 360", "Freinage"], a: 0, i: "Garer seul sans conducteur." },
-    { q: "Intérêt du Böllinger Höfe ?", o: ["Design", "Site sportives", "Musée", "Moteurs"], a: 1, i: "Usine pour modèles haute performance." },
-    { q: "Qu'est-ce que le Virtual Cockpit ?", o: ["Tableau numérique", "Écran tactile", "App", "Toit"], a: 0, i: "Tableau de bord numérique configurable." },
-    { q: "Division des modèles RS ?", o: ["Audi Sport", "Quattro", "RS Corp", "S-Line"], a: 0, i: "Audi Sport GmbH gère la performance." },
-    { q: "Pilotage niveau 3 ?", o: ["A6", "A8", "R8", "Q7"], a: 1, i: "L'A8 D5 fut la première." },
-    { q: "Acoustique électriques ?", o: ["Mousse", "Vitrage + suppression active", "Moteur", "Design"], a: 1, i: "Vitrage spécifique et réduction active du bruit." },
-    { q: "Rôle du LiDAR ?", o: ["Scan 3D", "Radio", "Nav", "Musique"], a: 0, i: "Sécurité et assistance avancée." },
-    { q: "Qui a aidé le TDI ?", o: ["Fiat", "Mercedes", "Aucun", "BMW"], a: 2, i: "Développement interne." },
-    { q: "Particularité 2.0 TFSI ?", o: ["Cycle Miller", "Électrique", "Pas turbo", "V6"], a: 0, i: "Cycle B-cycle pour l'efficience." },
-    { q: "Audi Drive Select ?", o: ["Modes conduite", "Roues", "Recul", "Vitesse"], a: 0, i: "Réglages moteur/suspension." },
-    { q: "Refroidissement liquide batterie ?", o: ["Vitesse", "Longévité/Puissance", "Prix", "Poids"], a: 1, i: "Stabilité thermique cruciale." },
-    { q: "Modèles hydrogène ?", o: ["Série", "Aucun", "Prototypage (h-tron)", "Camions"], a: 2, i: "Priorité au 100% électrique." },
-    { q: "Suspension Magnetic Ride ?", o: ["Fluide ferreux piloté", "Air", "Fixe", "Fer"], a: 0, i: "Changement de viscosité instantané." },
-    { q: "Freinage carbone-céramique ?", o: ["Chauffent moins", "Durent moins", "Fonte", "Fragiles"], a: 0, i: "Endurance extrême." },
-    { q: "Audi Phone Box ?", o: ["Téléphone", "Induction/Antenne", "Housse", "Accessoire"], a: 1, i: "Recharge et amplification." },
-    { q: "Mise à jour logicielle ?", o: ["Garage", "OTA", "CD", "Aucune"], a: 1, i: "Mises à jour à distance." },
-    { q: "Future génération cockpit ?", o: ["Panoramic", "MMI Touch Response", "Smart", "Digital"], a: 1, i: "Standard avec retour haptique." },
-    { q: "Traffic Jam Pilot ?", o: ["Bouchons", "Autoroute", "Parking", "Urgence"], a: 0, i: "Gestion dans les encombrements." },
-    { q: "Traînée jantes ?", o: ["Aéro-inserts", "Peinture", "Rayons", "Pneus"], a: 0, i: "Fermeture pour lisser l'air." },
-    { q: "Pre Sense ?", o: ["Sécurité préventive", "GPS", "Clim", "Audio"], a: 0, i: "Préparation aux chocs." },
-    { q: "Avantage multi-bras ?", o: ["Prix", "Confort/Précision", "Poids", "Réparation"], a: 1, i: "Référence Audi." },
-    { q: "Audi App Store ?", o: ["Jeux", "Apps tierces", "Accessoires", "Rien"], a: 1, i: "Divertissement intégré." },
-    { q: "Base A3 ?", o: ["MQB Evo", "PPE", "J1", "MLB"], a: 0, i: "Plateforme pour moteurs transversaux." },
-    { q: "Audi S ?", o: ["Sport", "Base", "Luxe", "Électrique"], a: 0, i: "Premier niveau de sportivité." },
-    { q: "Torque vectoring ?", o: ["Répartition couple", "Vitesse", "Freinage", "Vitesses"], a: 0, i: "Gestion fine par roue." },
-    { q: "Mild Hybrid (MHEV) ?", o: ["Rechargeable", "Hybridation 48V", "Électrique", "Diesel"], a: 1, i: "Assistance au démarrage." },
-    { q: "Mission 2033 ?", o: ["Arrêt thermique", "Fusion", "F1", "2-temps"], a: 0, i: "Tout électrique." }
+// Base de données : 50 questions techniques de niveau expert
+const quizExpert = [
+    { q: "Quelle est la fréquence de découpage (PWM) des onduleurs des moteurs MGU05 de l'Audi RS Q e-tron ?", o: ["10 kHz", "20 kHz", "16 kHz", "8 kHz"], a: 2, i: "La gestion fine du courant via PWM à 16 kHz est cruciale pour le rendement thermique des moteurs." },
+    { q: "Sur la plateforme PPE, quelle technologie gère la déconnexion mécanique des moteurs ?", o: ["Embrayage à friction", "Désaccoupleur à crabots", "Convertisseur hydraulique", "Planétaire"], a: 1, i: "Le désaccoupleur à crabots permet une efficience maximale en mode croisière." },
+    { q: "Quelle est la température optimale de service du fluide diélectrique dans les batteries PPE ?", o: ["35°C", "55°C", "25°C", "45°C"], a: 0, i: "Le système maintient la batterie proche de 35°C pour maximiser la capacité de charge rapide." },
+    { q: "Que permet le 'torque vectoring' actif sur l'essieu arrière de l'e-tron S ?", o: ["Désactivation du freinage", "Répartition vectorielle par embrayages", "Pilotage directionnel", "Gestion du couple par l'ABS"], a: 1, i: "Il utilise deux moteurs arrière gérés indépendamment sans différentiel mécanique." },
+    { q: "Quelle est la précision du LiDAR utilisé dans le système Audi zFAS ?", o: ["10 cm", "2 cm", "5 cm", "1 cm"], a: 1, i: "Le scanner laser permet une cartographie 3D environnementale au centimètre près." },
+    { q: "Comment le cycle B-cycle gère-t-il les pompes à huile ?", o: ["Vitesse fixe", "Débit variable piloté", "Pression constante", "Débrayable"], a: 1, i: "Le débit est régulé en temps réel par le calculateur moteur pour réduire les pertes par pompage." },
+    { q: "Quel matériau compose les disques de freins carbone-céramique Audi Sport ?", o: ["Carbone pur", "Carbure de silicium renforcé", "Alumine", "Acier fritté"], a: 1, i: "Le composite carbure de silicium offre une résistance thermique extrême." },
+    { q: "Quelle tension auxiliaire le convertisseur DC/DC PPE fournit-il ?", o: ["24V", "48V", "12V", "220V"], a: 2, i: "Le 12V reste le standard pour les calculateurs et l'électronique de confort." },
+    { q: "La gestion thermique des moteurs e-tron utilise quelle technologie de pompe ?", o: ["Centrifuge à vitesse fixe", "Centrifuge pilotée par PWM", "Engrenage", "Péristaltique"], a: 1, i: "La pompe centrifuge pilotée permet d'ajuster le flux selon la température moteur/batterie." },
+    { q: "Comment l'Audi A8 gère-t-elle l'inclinaison en virage (Active Suspension) ?", o: ["Vérins hydrauliques", "Actionneurs électromécaniques 48V", "Coussins d'air", "Amortisseurs magnétiques"], a: 1, i: "Chaque roue est équipée d'un moteur électrique 48V capable de soulever/abaisser le châssis en quelques ms." },
+    { q: "Quelle est la particularité du moteur 2.5 TFSI 5 cylindres ?", o: ["Ordre allumage 1-2-4-5-3", "Ordre allumage 1-5-2-4-3", "Vilebrequin à plat", "Architecture boxer"], a: 1, i: "Cet ordre spécifique (1-5-2-4-3) est le secret de sa sonorité iconique." },
+    { q: "Qu'est-ce que le 'Coasting' dans les systèmes Mild Hybrid (MHEV) 48V ?", o: ["Freinage forcé", "Mode roue libre avec moteur coupé", "Mode sport", "Charge rapide"], a: 1, i: "Le moteur thermique est totalement débrayé et coupé pour économiser le carburant." },
+    { q: "Quel type de rotor est utilisé dans les moteurs synchrones Audi ?", o: ["Rotor bobiné", "Rotor à aimants permanents (PSM)", "Rotor à cage d'écureuil", "Rotor à réluctance"], a: 1, i: "Les moteurs PSM offrent la meilleure densité de puissance pour les véhicules Audi." },
+    { q: "À quoi sert la vanne thermostatique pilotée dans le circuit MMI ?", o: ["Chauffage habitacle", "Refroidissement batterie", "Refroidissement onduleur", "Gestion des flux de refroidissement croisés"], a: 3, i: "Le système permet de transférer la chaleur du moteur vers la batterie ou inversement." },
+    { q: "Quelle est la fonction du 'Pre-fill' du système de freinage ?", o: ["Purger l'air", "Remplir le circuit pour réduire la garde à la pédale", "Refroidir les plaquettes", "Augmenter la pression ABS"], a: 1, i: "Le système met les plaquettes en contact avec le disque dès le lever de pied pour réduire le temps de réponse." },
+    { q: "Sur les modèles J1, quelle est la fonction du 'Range Mode' ?", o: ["Augmente la vitesse", "Limite puissance/vitesse et optimise clim", "Désactive l'ABS", "Active le drift"], a: 1, i: "Il optimise tous les paramètres de consommation pour maximiser l'autonomie." },
+    { q: "Que mesure le capteur de 'SOH' (State of Health) de la batterie ?", o: ["Charge restante", "Dégradation chimique et capacité réelle", "Température interne", "Tension maximale"], a: 1, i: "Le SOH évalue la capacité de la batterie par rapport à son état neuf." },
+    { q: "Comment Audi gère-t-elle l'acoustique moteur sur l'e-tron GT ?", o: ["Haut-parleurs uniquement", "Générateur de son électronique intérieur/extérieur", "Échappement actif", "Isolation passive"], a: 1, i: "Le système e-tron sport sound génère une signature sonore spécifique corrélée à la charge moteur." },
+    { q: "Quel est l'avantage du 'Multi-link' arrière sur les modèles RS ?", o: ["Simplicité", "Guidage géométrique précis des roues", "Coût réduit", "Légèreté"], a: 1, i: "Le multi-link permet de contrôler le carrossage et le pincement dynamique." },
+    { q: "Quelle technologie empêche le patinage lors de la régénération ?", o: ["Répartition intelligente du freinage (EBD)", "ESP", "Différentiel mécanique", "Régulateur de couple"], a: 0, i: "L'EBD gère la répartition entre le freinage électrique et hydraulique pour éviter le blocage." },
+    { q: "Quel est le nom du système de filtration de l'air des moteurs TFSI ?", o: ["Filtre à particules essence (OPF)", "Catalyseur 3 voies", "Filtre à charbon", "Filtre cyclonique"], a: 0, i: "L'OPF est devenu indispensable pour respecter les normes Euro 6d." },
+    { q: "Quelle technologie équipe les feux arrière du Q6 e-tron ?", o: ["LED matricielles", "OLED 2.0 (signatures digitales)", "Fibres", "Laser"], a: 1, i: "Audi utilise la technologie OLED pour créer des animations dynamiques." },
+    { q: "Quelle est la tension nominale d'un système MHEV Audi ?", o: ["12V", "24V", "48V", "110V"], a: 2, i: "Le système 48V permet d'assister le moteur via l'alterno-démarreur." },
+    { q: "Que gère le calculateur zFAS ?", o: ["Moteur", "Suspension", "Pilotage autonome (ADX)", "Audio"], a: 2, i: "Le zFAS est le cerveau central de toutes les aides à la conduite (ADAS)." },
+    { q: "Comment le turbo est-il refroidi après coupure moteur ?", o: ["Pompe à eau électrique auxiliaire", "Convection naturelle", "Ventilation forcée", "Huile"], a: 0, i: "La pompe auxiliaire évite la cokéfaction de l'huile dans le palier." },
+    { q: "Quel gaz est utilisé dans la climatisation Audi moderne ?", o: ["R134a", "R1234yf", "Fréon", "Ammoniac"], a: 1, i: "Le R1234yf est obligatoire pour son faible impact sur l'effet de serre." },
+    { q: "Quelle est la particularité des disques de frein ventilés par 'piliers' ?", o: ["Plus légers", "Meilleure dissipation thermique que les ailettes droites", "Plus chers", "Plus fragiles"], a: 1, i: "La structure en piliers favorise un flux d'air turbulent optimisé." },
+    { q: "Quel mode de propulsion est utilisé par l'Audi A3 hybride ?", o: ["Parallel Hybrid", "Series Hybrid", "Full Electric", "Micro Hybrid"], a: 0, i: "Les moteurs électrique et thermique travaillent en parallèle via une boîte DSG." },
+    { q: "Qu'est-ce que l'injection directe 'Common Rail' ?", o: ["Rampe commune haute pression", "Injection basse pression", "Injection par carburateur", "Injection gaz"], a: 0, i: "La rampe commune permet une pression d'injection indépendante du régime." },
+    { q: "Comment Audi nomme sa transmission automatique à double embrayage ?", o: ["Tiptronic", "S-tronic", "Multitronic", "Direct Shift"], a: 1, i: "S-tronic est le nom commercial des boîtes DSG chez Audi." },
+    { q: "Quelle est la fonction du 'différentiel central couronne' ?", o: ["Répartition du couple avant/arrière", "Blocage de roue", "Direction", "Freinage"], a: 0, i: "Il permet une répartition dynamique de 40/60 par défaut." },
+    { q: "Qu'est-ce que le 'B-mode' sur la boîte de vitesse e-tron ?", o: ["Parking", "Freinage régénératif maximal", "Sport", "Mode éco"], a: 1, i: "Le B-mode augmente la force de récupération lors du lâcher d'accélérateur." },
+    { q: "Quel type de carrosserie utilise majoritairement le 'thermoformage' ?", o: ["Pièces de structure acier (montants)", "Panneaux de porte", "Toit", "Jantes"], a: 0, i: "L'acier embouti à chaud garantit une sécurité maximale pour le cockpit." },
+    { q: "La gestion électronique du différentiel EDS fait quoi ?", o: ["Freine la roue qui patine", "Bloque les 4 roues", "Désactive le moteur", "Change la suspension"], a: 0, i: "L'EDS simule un différentiel autobloquant via l'ABS." },
+    { q: "Quel est l'intérêt d'un moteur à course longue (long stroke) ?", o: ["Haut régime", "Couple à bas régime", "Vitesse max", "Légèreté"], a: 1, i: "La course longue favorise le couple grâce au bras de levier." },
+    { q: "Qu'est-ce que l'injection 'MPI' ?", o: ["Injection multipoint (indirecte)", "Injection directe", "Carburateur", "Injection haute pression"], a: 0, i: "L'injection multipoint injecte dans le collecteur d'admission." },
+    { q: "Comment Audi gère-t-elle les gaz d'échappement en phase de chauffe ?", o: ["Injection tardive pour chauffer le catalyseur", "Ralenti accéléré", "Ventilateur", "Bypass"], a: 0, i: "L'injection tardive augmente la température des gaz pour activer le catalyseur." },
+    { q: "À quoi sert la vanne EGR haute pression ?", o: ["Réduction NOx", "Augmentation puissance", "Refroidissement turbo", "Bruit"], a: 0, i: "Recycler des gaz brûlés réduit la température de combustion et donc les NOx." },
+    { q: "Que permet la transmission 'Tiptronic' ?", o: ["Changement manuel séquentiel", "Mode automatique uniquement", "Mode électrique", "Drift"], a: 0, i: "Tiptronic permet d'imposer un rapport via le levier ou les palettes." },
+    { q: "Quelle technologie réduit les frictions des cylindres ?", o: ["Revêtement plasma (APS)", "Céramique", "Huile spéciale", "Chromage"], a: 0, i: "L'APS (Atmospheric Plasma Spray) réduit drastiquement les frottements." },
+    { q: "Qu'est-ce qu'une structure 'sandwich' dans les batteries e-tron ?", o: ["Assemblage de modules et refroidissement", "Structure carrosserie", "Sièges", "Tableau de bord"], a: 0, i: "Le pack batterie empile couches actives et circuits de refroidissement." },
+    { q: "Quelle est la fonction du capteur d'angle de braquage ?", o: ["Aide au stationnement", "Pilotage ESP et Quattro", "Gestion moteur", "Radio"], a: 1, i: "Il est crucial pour l'ESP qui compare angle volant et trajectoire réelle." },
+    { q: "Qu'est-ce qu'un moteur à 'flux transversal' ?", o: ["Type de moteur électrique spécialisé", "Type de turbo", "Mode hybride", "Type de boîte"], a: 0, i: "Le flux transversal permet une densité de couple très élevée." },
+    { q: "Quel est l'avantage du refroidissement 'indirect' batterie ?", o: ["Plus simple à réparer", "Meilleure gestion thermique", "Moins cher", "Plus léger"], a: 1, i: "Le refroidissement indirect isole mieux les cellules en cas de fuite." },
+    { q: "Comment Audi contrôle-t-elle la pression d'huile ?", o: ["Pompe à huile pilotée par map", "Pompe constante", "Gravité", "Réservoir secondaire"], a: 0, i: "La pompe pilotée réduit la charge mécanique du moteur." },
+    { q: "Que permet le 'Launch Control' ?", o: ["Départ arrêté optimisé", "Mode parking", "Mode neige", "Vitesse max"], a: 0, i: "Gestion optimisée du couple et de la motricité au départ." },
+    { q: "Quel type de turbo est utilisé sur les moteurs 4.0 V8 TFSI ?", o: ["Mono-turbo", "Bi-turbo (Twin-scroll)", "Quadri-turbo", "Électrique"], a: 1, i: "Le bi-turbo en position 'Hot V' (au centre) réduit le lag." },
+    { q: "Quelle est la particularité du moteur 3.0 TDI V6 ?", o: ["Distribution par chaîne", "Distribution par courroie", "Distribution par cascade de pignons", "Pas de distribution"], a: 0, i: "La chaîne est utilisée pour la durabilité et la précision." },
+    { q: "Qu'est-ce que l'injection 'Stratifiée' ?", o: ["Mélange pauvre localisé à la bougie", "Mélange riche permanent", "Mélange homogène", "Pas de mélange"], a: 0, i: "Elle optimise la combustion en charge partielle pour consommer moins." },
+    { q: "Quelle est la mission d'Audi pour 2033 ?", o: ["100% électrique", "Fusion groupe", "Abandon auto", "Tout diesel"], a: 0, i: "Audi a annoncé l'arrêt progressif du thermique d'ici 2033." }
 ];
 
 let currentIdx = 0;
 
 function loadQ() {
-    if(currentIdx >= quizTech.length) { alert("Quiz terminé !"); location.reload(); return; }
-    const q = quizTech[currentIdx];
-    document.getElementById('question-text').innerText = q.q;
+    if(currentIdx >= quizExpert.length) { alert("Quiz terminé. Maîtrise confirmée."); location.reload(); return; }
+    const q = quizExpert[currentIdx];
+    document.getElementById('question-text').innerText = (currentIdx + 1) + ". " + q.q;
     const cont = document.getElementById('options-container');
     cont.innerHTML = '';
     q.o.forEach((opt, i) => {
@@ -102,14 +102,14 @@ function loadQ() {
 }
 
 function reveal(idx) {
-    const correct = quizTech[currentIdx].a;
+    const correct = quizExpert[currentIdx].a;
     const btns = document.querySelectorAll('.options button');
     btns.forEach((b, i) => {
         b.disabled = true;
         if(i === correct) b.classList.add('correct');
         else if(i === idx) b.classList.add('wrong');
     });
-    document.getElementById('insight-text').innerText = quizTech[currentIdx].i;
+    document.getElementById('insight-text').innerText = quizExpert[currentIdx].i;
     document.getElementById('insight-box').style.display = 'block';
 }
 
